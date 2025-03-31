@@ -1,0 +1,224 @@
+<%- layout("/layouts/boilerplate") -%>
+    <style>
+        /* 🌌 Form Container Styling */
+        .outer {
+            margin: 5rem 0;
+        }
+
+        .edit-profile-container {
+            background-color: #1a1a2e;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 2px solid #6a1b9a;
+            color: #f4f4f9;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #e040fb;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 🌠 Profile Picture Preview */
+        .profile-picture-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-picture-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #6a1b9a;
+            box-shadow: 0px 4px 12px rgba(224, 64, 251, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-picture-preview img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 🖥️ Form Styling */
+        .profile-edit-form input,
+        .profile-edit-form select {
+            background-color: #16213e;
+            color: #f4f4f9;
+            border: 1px solid #6a1b9a;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            transition: border-color 0.3s ease;
+        }
+
+        .profile-edit-form input:focus,
+        .profile-edit-form select:focus {
+            border-color: #9c27b0;
+            outline: none;
+            box-shadow: 0px 0px 8px rgba(156, 39, 176, 0.4);
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f4f4f9;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-text {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* 🚀 Checkbox Styling */
+        .form-check-input {
+            background-color: #16213e;
+            border: 1px solid #6a1b9a;
+            width: 18px;
+            height: 18px;
+        }
+
+        .form-check-label {
+            color: #e040fb;
+            font-size: 0.9rem;
+        }
+
+        /* 🎯 Button Styling */
+        .btn-danger {
+            background-color: #9c27b0;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .btn-danger:hover {
+            background-color: #7a228a;
+            transform: translateY(-2px);
+            box-shadow: 0px 4px 12px rgba(224, 64, 251, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #16213e;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1a1a2e;
+            color: #e040fb;
+        }
+
+        /* 🌙 Dark Mode Consistency */
+        .dark-mode .edit-profile-container {
+            background-color: #1a1a2e;
+        }
+
+        .dark-mode label,
+        .dark-mode .form-text {
+            color: #d1d1d1;
+        }
+
+        /* 📱 Responsive Styling */
+        @media (max-width: 768px) {
+            .outer {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+
+    <div class="row outer">
+        <div class="col-12 col-md-8 col-lg-6 mx-auto edit-profile-container">
+            <h1>Edit Your Profile</h1>
+
+            <!-- ⭐ Profile Picture Preview -->
+            <div class="profile-picture-preview">
+                <img id="profileImagePreview"
+                    src="<%= user.profilePicture || 'https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg' %>"
+                    alt="Profile Picture" />
+            </div>
+
+            <form action="/api/users/update?_method=PUT" method="POST">
+                <!-- ✅ Name + Username -->
+                <div class="row mb-3">
+                    <div class="col-md-6 profile-edit-form">
+                        <label>Username</label>
+                        <input type="text" name="username" value="<%= user.username %>" required>
+                    </div>
+                    <div class="col-md-6 profile-edit-form">
+                        <label>Name</label>
+                        <input type="text" name="name" value="<%= user.name || '' %>">
+                    </div>
+                </div>
+
+                <!-- ✅ Email -->
+                <div class="mb-3 profile-edit-form">
+                    <label>Email</label>
+                    <input type="email" name="email" value="<%= user.email %>" required>
+                </div>
+
+                <!-- ✅ Specialization + License -->
+                <div class="row mb-3">
+                    <div class="col-md-6 profile-edit-form">
+                        <label>Specialization</label>
+                        <input type="text" name="specialization" value="<%= user.specialization || '' %>">
+                    </div>
+                    <div class="col-md-6 profile-edit-form">
+                        <label>License Number</label>
+                        <input type="text" name="licenseNumber" value="<%= user.licenseNumber || '' %>">
+                    </div>
+                </div>
+
+                <!-- ✅ Experience -->
+                <div class="mb-3 profile-edit-form">
+                    <label>Experience (Years)</label>
+                    <input type="number" name="experience" value="<%= user.experience || '' %>" min="0">
+                </div>
+
+                <!-- ✅ Profile Picture Upload -->
+                <!-- <div class="mb-3 profile-edit-form">
+                    <label>Upload Profile Image</label>
+                    <input type="file" name="profilePicture" id="profilePictureInput">
+                </div> -->
+
+                <br>
+
+                <!-- ✅ Buttons -->
+                <!-- ✅ Buttons -->
+                <div class="d-flex justify-content-center gap-2 mt-3">
+                    <button type="submit" class="btn btn-outline-danger">Save Changes</button>
+                    <a href="/profile" class="btn btn-outline-secondary">Go Back</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('profilePictureInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImagePreview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>

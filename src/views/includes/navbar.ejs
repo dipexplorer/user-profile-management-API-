@@ -1,0 +1,16 @@
+<header>
+    <nav>
+        <div class="left-section">
+            <div class="navbar-brand logo">
+                <a href="/"><span style="color:#e040fb;">User Profile</span></a>
+            </div>
+        </div>
+        <div class="auth-links">
+            <% if (currentUser) { %>
+                <a href="/api/users/logout">Logout</a>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                    <% } %>
+        </div>
+    </nav>
+</header>
