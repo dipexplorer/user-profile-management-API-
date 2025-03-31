@@ -5,7 +5,6 @@ if (process.env.NODE_ENV != "production") {
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const mongoose = require('mongoose');
 const MongoStore = require("connect-mongo");
 const path = require("path");
 const cookieParser = require("cookie-parser");
@@ -50,10 +49,6 @@ const sessionOptions = {
     secret: process.env.SESSION_SECRET || "mysecret",
     resave: false,
     saveUninitialized: false,//do not change it true
-    store: MongoStore.create({
-        mongoUrl: process.env.DB_URL, // Ensure this is correct
-        touchAfter: 24 * 3600, // Reduce session updates
-    }),
     cookie: {
         expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -68,13 +63,17 @@ app.use(flash());
 
 // Middleware to Add Global Variables
 app.use((req, res, next) => {
-    console.log("Session Info:", req.session);
-    console.log("User Info:", req.user); // Debugging user session
+    // console.log("Session Info:", req.session);
+
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currentUser = req.user || null;
+
+    // ✅ Use session user instead of req.user
+    res.locals.currentUser = req.session.user || null;
+
     next();
 });
+
 
 // Import Routes
 const healthCheckRouter = require("./routes/healthCheck_route.js");

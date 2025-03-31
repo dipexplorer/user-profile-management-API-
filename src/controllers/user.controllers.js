@@ -28,7 +28,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-    console.log("Received Body:", req.body);
+    // console.log("Received Body:", req.body);
     const { name, email, password, confirmPassword, address, bio, profilePic } = req.body;
 
     // Validate required fields
@@ -44,9 +44,8 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Check if user already exists
-    const user = await User.findOne({ $or: [{ name }, { email }] });
-    if (user) {
-        // throw new apiError(409, "name with email already exists");
+    const userExists = await User.findOne({ $or: [{ name }, { email }] });
+    if (userExists) {
         req.flash('error', "User already exists");
         return res.redirect('/login');
     }
@@ -73,6 +72,14 @@ const registerUser = asyncHandler(async (req, res) => {
         }
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+        // Store user session
+        req.session.user = {
+            _id: createdUser._id,
+            name: createdUser.name,
+            email: createdUser.email,
+        };
+
         res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "Lax" });
         res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "Lax" });
 
@@ -93,13 +100,12 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
-    if (!email && !password) {
-        // throw new apiError(400, "All fields are required");
+    if (!email || !password) {
         req.flash('error', "All fields are required");
         return res.redirect('/login');
     }
 
-    let user = await User.findOne({ email }).select("+refreshToken");
+    let user = await User.findOne({ email }).select("+password +refreshToken");
 
     if (!user) {
         // throw new apiError(401, "User not found");
@@ -122,6 +128,13 @@ const loginUser = asyncHandler(async (req, res) => {
         return res.redirect('/login');
     }
 
+    // ✅ Store user session
+    req.session.user = {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+    };
+
     res.cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "Lax" });
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: "Lax" });
 
@@ -132,29 +145,42 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 const logOutUser = asyncHandler(async (req, res) => {
-    console.log("Cookies Received in Logout:", req.cookies);
+    // console.log("Cookies Received in Logout:", req.cookies);
+    // console.log("User Session Before Logout:", req.session.user);
 
-    console.log("AFTER RUNNING JWT_MIDDLEWARW:", req.user);
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            // using set operations
-            $set: { refreshToken: undefined },
-        },
-        {
-            new: true,
-        }
-    );
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-    };
-    return res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(new apiResponse(200, null, "User Logged out successfully"));
+    if (!req.session.user) {
+        req.flash('error', "No user is logged in.");
+        return res.redirect('/login');
+    }
+
+    try {
+        // ✅ Remove refreshToken from DB
+        await User.findByIdAndUpdate(req.session.user._id, { $unset: { refreshToken: "" } });
+
+        // ✅ Set flash message BEFORE destroying session
+        req.flash('success', "Logged out successfully!");
+
+        // ✅ Destroy session with callback
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Session Destroy Error:", err);
+                return res.redirect('/');
+            }
+
+            // ✅ Properly clear cookies
+            res.clearCookie("accessToken", { path: '/' });
+            res.clearCookie("refreshToken", { path: '/' });
+
+            return res.redirect('/login');
+        });
+
+    } catch (err) {
+        console.error("Error in Logout:", err);
+        req.flash('error', "Something went wrong. Try again.");
+        return res.redirect('/');
+    }
 });
+
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
     console.log("Cookies Received in Refresh Token:", req.cookies);  // Debugging
