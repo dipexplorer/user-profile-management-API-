@@ -1,65 +1,110 @@
 <%- layout("/layouts/boilerplate") -%>
     <style>
         .profile-container {
-            max-width: 800px;
-            margin: 3rem auto;
-            padding: 2rem;
-            background-color: #e7e7e7c5;
-            border-radius: 15px;
-            box-shadow: 0 5px 16px rgba(0, 0, 0, 0.353);
+            max-width: 950px;
+            margin: 10rem auto;
+            padding: 2.5rem;
+            background-color: #25292e;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: 600;
             text-align: center;
             margin-bottom: 2rem;
-            color: #2c3e50;
+            color: #ecf0f1;
         }
 
+        /* Profile Card */
         .profile-card {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             padding: 2rem;
-            background-color: #f7f7f7;
-            border-radius: 10px;
-            border: 2px solid rgba(128, 128, 128, 0.593);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background-color: #222b33;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
         }
 
         .profile-picture {
-            border-radius: 50% !important;
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
             object-fit: cover;
-            box-shadow: 4px 10px 8px rgba(0, 0, 0, 0.534);
+            box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
 
-        .profile-picture img {
-            width: inherit;
-            height: inherit;
-            border: 5px solid rgb(124, 124, 124);
-            border-radius: 50% !important;
+        .profile-picture:hover {
+            transform: scale(1.05);
         }
 
         .profile-details {
             flex: 1;
-            margin-left: 2.5rem;
+            margin-left: 2rem;
+            color: #ecf0f1;
         }
 
         .profile-details p {
             font-size: 1.2rem;
-            margin: 0.5rem 0;
-            color: #878787;
+            margin: 0.8rem 0;
+            color: #bdc3c7;
         }
 
         .profile-details span {
-            color: #34495e;
-            font-weight: 600;
+            font-weight: bold;
+            color: #ecf0f1;
         }
 
-        /* Profile Picture Upload Styling */
-        .upload-container {
+        /* Button Styles */
+        .btn-group {
             margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-edit-profile,
+        .btn-delete-account {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit-profile {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+        }
+
+        .btn-edit-profile:hover {
+            background-color: #16a085;
+            transform: scale(1.05);
+        }
+
+        .btn-delete-account {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+        }
+
+        .btn-delete-account:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* File Upload */
+        .upload-container {
+            margin-top: 2rem;
             text-align: center;
         }
 
@@ -69,56 +114,98 @@
 
         .upload-container label {
             font-size: 1rem;
-            color: #ffffff;
+            color: #fff;
             background-color: #ff385c;
-            padding: 0.75rem 1.5rem;
+            padding: 0.8rem 1.6rem;
             border-radius: 50px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
 
-        @media(max-width: 455px) {
-            .profile-details {
-                margin-left: 0;
+        .upload-container label:hover {
+            background-color: #e12f56;
+            transform: scale(1.05);
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 4px 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 768px) {
+            .profile-card {
+                flex-direction: column;
+                align-items: center;
             }
 
-            .profile-card {
-                padding: 2rem 1rem;
+            .profile-details {
+                margin-left: 0;
+                margin-top: 1.5rem;
             }
+
+            .profile-picture {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        /* Message Styles */
+        .error-msg,
+        .success-msg {
+            text-align: center;
+            font-size: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .error-msg {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .success-msg {
+            background-color: #d4edda;
+            color: #155724;
         }
     </style>
 
-    <%- layout("/layouts/boilerplate") -%>
+    <div class="profile-container">
+        <h1>Welcome, <%= user.name %>!</h1>
 
-        <div class="profile-container">
-            <h1>Welcome, <%= currentUser.username %>!</h1>
+        <div class="profile-card">
+            <div class="profile-picture">
+                <% if (user.profilePic) { %>
+                    <img src="<%= user.profilePic %>" alt="Profile Image">
+                    <% } else { %>
+                        <img src="/pic/profile.jpg" alt="Default Profile Image">
+                        <% } %>
+            </div>
 
-            <div
-                class="d-flex flex-column align-items-center justify-content-center flex-md-row justify-content-md-around profile-card">
-                <div class="profile-picture">
-                    <% if (currentUser && currentUser.profilePicture) { %>
-                        <img src="<%= currentUser.profilePicture %>" alt="Profile Image">
-                        <% } else { %>
-                            <img src="/pic/profile.jpg" alt="Default Profile Image">
-                            <% } %>
-                </div>
+            <div class="profile-details">
+                <p><span>Name:</span>
+                    <%= user.name %>
+                </p>
+                <p><span>Email ID:</span>
+                    <%= user.email %>
+                </p>
+                <p><span>Address:</span>
+                    <%= user.address %>
+                </p>
+                <p><span>Bio:</span>
+                    <%= user.bio || 'No bio available' %>
+                </p>
 
-                <div class="profile-details">
-                    <p><span>Username:</span>
-                        <%= currentUser.username %>
-                    </p>
-                    <p><span>Email ID:</span>
-                        <%= currentUser.email %>
-                    </p>
-
-                    <div class="btn-group">
-                        <a class="btn btn-outline-secondary" href="/account/update">Edit
-                            Profile</a>&nbsp;&nbsp;&nbsp;
-                        <form action="/api/users/delete?_method=DELETE" method="POST" style="margin: 0;">
-                            <button type="submit" class="btn btn-outline-danger">Delete Account</button>
-                        </form>
-
-                    </div>
+                <div class="btn-group">
+                    <a href="/account/update" class="btn-edit-profile">Edit Profile</a>
+                    <form action="/api/users/delete?_method=DELETE" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-delete-account">Delete Account</button>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>

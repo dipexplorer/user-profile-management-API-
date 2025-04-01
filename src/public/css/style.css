@@ -1,26 +1,55 @@
+/* ✅ Root Variables for Easy Theme Changes */
+:root {
+    --primary-color: #ff8a00; /* Orange */
+    --secondary-color: #e52e71; /* Pink */
+    --bg-dark: #0f0f1a; /* Dark background */
+    --text-light: #f4f4f9; /* Light text */
+    --nav-bg: #1a1a2e; /* Navigation background */
+    --nav-border: #6a1b9a; /* Navigation border */
+    --feature-bg: rgba(255, 255, 255, 0.08); /* Feature card background */
+    --cta-hover-bg: #ff6a00; /* Button hover background */
+    --highlight-color: #e52e71; /* Highlight color */
+    --btn-padding: 8px 16px;
+    --font-family: rakkas;
+}
+
+body {
+    font-family: var(--font-family);
+    background: var(--bg-dark);
+    color: var(--text-light);
+    overflow-x: hidden;
+}
+
+/* ✅ Particles.js Background */
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background: var(
+        --bg-dark
+    ); /* Ensure the background is consistent with the page theme */
+    z-index: -1;
+}
+
 /* ✅ Navbar */
 nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 18px 40px;
-    background: #1a1a2e; /* Dark Blue */
-    border-bottom: 2px solid #6a1b9a; /* Dark Purple */
+    background: var(--nav-bg);
+    border-bottom: 2px solid var(--nav-border);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
 }
 
-/* ✅ Navbar Brand */
 .navbar-brand a {
-    color: #9c27b0; /* Light Purple */
+    color: var(--secondary-color);
     font-size: 1.8rem;
     font-weight: bold;
     text-decoration: none;
-}
-
-/* ✅ Left Section */
-.left-section {
-    display: flex;
-    align-items: center;
-    gap: 30px;
 }
 
 /* ✅ Navigation Links */
@@ -28,94 +57,192 @@ nav ul {
     list-style: none;
     display: flex;
     gap: 20px;
-    padding: 0;
-    margin: 0;
 }
 
 nav ul li a {
-    color: #f4f4f9;
+    color: var(--text-light);
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
-    font-size: 1em;
 }
 
 nav ul li a:hover {
-    color: #9c27b0; /* Light Purple */
+    color: var(--secondary-color);
 }
 
-/* ✅ Authentication Links */
+/* ✅ Auth Links */
 .auth-links {
     display: flex;
-    align-items: center;
     gap: 15px;
 }
 
 .auth-links a {
-    color: #f4f4f9;
+    color: var(--text-light);
     text-decoration: none;
-    font-size: 1em;
     font-weight: bold;
-    padding: 8px 16px;
+    padding: var(--btn-padding);
     border-radius: 5px;
     transition: background 0.3s ease;
 }
 
 .auth-links a:hover {
-    background: #9c27b0;
+    background: var(--secondary-color);
     color: white;
+}
+
+/* ✅ Hero Section */
+.hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 50vh;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+    background: var(--bg-dark); /* Ensure hero section has dark background */
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(
+        90deg,
+        var(--primary-color),
+        var(--secondary-color)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 3px 3px 15px rgba(255, 138, 0, 0.5);
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    color: #bbb;
+    margin-bottom: 30px;
 }
 
 /* ✅ Call-to-Action Button */
 .cta-button {
     display: inline-block;
-    background: #8a179e;
-    color: #ffffff;
-    padding: 12px 32px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    box-shadow: 0px 4px 12px rgba(224, 64, 251, 0.2);
-    transition:
-        background 0.3s ease,
-        transform 0.2s;
+    padding: 14px 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: white;
+    background: var(--primary-color);
+    border-radius: 50px;
+    transition: 0.3s;
     text-decoration: none;
 }
 
 .cta-button:hover {
-    background: #7a228a;
-    transform: translateY(-3px);
+    background: var(--cta-hover-bg);
+    transform: scale(1.1);
+    box-shadow: 0px 8px 25px rgba(255, 138, 0, 0.7);
 }
 
-/* ✅ Page Background */
-body {
-    background-color: #f8f8fc;
-    font-family: Arial, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0;
+/* ✅ Features Section */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+    z-index: 1;
 }
 
-/* ✅ Profile Container */
-.profile-container {
-    max-width: 600px;
-    margin: 50px auto;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+.feature {
+    background: var(--feature-bg);
     padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(15px);
     text-align: center;
+    transition: 0.3s;
+    color: var(--text-light); /* Ensure text is light */
 }
 
-/* ✅ Profile Header */
-h1 {
-    color: #6a1b9a;
-    font-size: 2rem;
+.feature:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 30px rgba(255, 138, 0, 0.4);
+}
+
+.feature h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
     margin-bottom: 10px;
 }
 
-/* ✅ Profile Text */
-p {
-    color: #555;
-    font-size: 1.2rem;
+.feature p {
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* ✅ Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ✅ Responsive Design */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .cta-button {
+        font-size: 16px;
+        padding: 12px 30px;
+    }
+
+    .feature {
+        padding: 20px;
+    }
+
+    .auth-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    nav {
+        padding: 18px 20px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navbar-brand a {
+        font-size: 1.6rem;
+    }
+}
+
+/* ✅ Mobile-Friendly Layout for Auth Links */
+@media (max-width: 480px) {
+    .auth-links a {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .cta-button {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+/* ✅ Smooth Scroll */
+html {
+    scroll-behavior: smooth;
 }

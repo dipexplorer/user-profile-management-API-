@@ -1,28 +1,113 @@
 <% layout("layouts/boilerplate") %>
-    <style>
-        .profile {
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
-            margin: 0 auto;
-            padding: 20px;
-            width: 80%;
-        }
-
-        .profile h1 {
-            text-align: center;
-        }
-
-        .profile p {
-            text-align: center;
-        }
-    </style>
+    <!-- Particles.js for Animated Background -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 
     <body>
 
-        <div class="profile">
-            <h1>User Profile</h1>
-            <p>Welcome to the user profile page!</p>
-        </div>
+        <!-- Background Animation -->
+        <div id="particles-js"></div>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>🚀 User Profile Management API</h1>
+            <p>A secure, efficient, and scalable API for user authentication & profile management.</p>
+            <div class="cta-buttons">
+                <a href="https://github.com/dipexplorer/user-profile-management-API-" class="cta-button">View on
+                    GitHub</a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="feature">
+                <h3><i class="fas fa-lock"></i> JWT Authentication</h3>
+                <p>Secure user authentication using JSON Web Tokens (JWT).</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-key"></i> Password Hashing</h3>
+                <p>Uses bcrypt to encrypt user passwords for better security.</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-user"></i> Profile Management</h3>
+                <p>Users can update their own profiles securely.</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-database"></i> MongoDB with Mongoose</h3>
+                <p>Efficient data storage and retrieval using MongoDB.</p>
+            </div>
+            <div class="feature">
+                <h3><i class="fas fa-shield-alt"></i> Security & Error Handling</h3>
+                <p>Proper error responses and enhanced security with CORS & Helmet.</p>
+            </div>
+        </section>
+
+        <!-- JavaScript for Particles.js -->
+        <script>
+            particlesJS("particles-js", {
+                particles: {
+                    number: {
+                        value: 100,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 4,
+                            size_min: 0.1
+                        }
+                    },
+                    color: {
+                        value: "#ff8a00"  /* Primary Color: Orange */
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ff8a00", /* Primary Color */
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    },
+                    shape: {
+                        type: "circle"
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 2,
+                            opacity_min: 0.1
+                        }
+                    },
+                    interactivity: {
+                        detect_on: "canvas",
+                        events: {
+                            onhover: {
+                                enable: true,
+                                mode: "repulse"
+                            },
+                            onclick: {
+                                enable: true,
+                                mode: "push"
+                            }
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+        </script>
 
     </body>

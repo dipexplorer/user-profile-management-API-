@@ -98,14 +98,14 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { name, password } = req.body;
 
-    if (!email || !password) {
+    if (!name || !password) {
         req.flash('error', "All fields are required");
         return res.redirect('/login');
     }
 
-    let user = await User.findOne({ email }).select("+password +refreshToken");
+    let user = await User.findOne({ name }).select("+password +refreshToken");
 
     if (!user) {
         // throw new apiError(401, "User not found");
@@ -183,137 +183,156 @@ const logOutUser = asyncHandler(async (req, res) => {
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-    console.log("Cookies Received in Refresh Token:", req.cookies);  // Debugging
+    // console.log("Cookies Received in Refresh Token:", req.cookies); // Debugging
+    // console.log("Body Received in Refresh Token:", req.body); // Debugging
 
-    const incomingRefreshToken =
-        req.cookies.refreshToken || req.body.refreshToken;
+    // ✅ Ensure refreshToken is extracted correctly
+    const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
     if (!incomingRefreshToken) {
-        throw new apiError(401, "No refresh token provided");
+        console.error("❌ No refresh token found in cookies or body.");
+        req.flash('error', "Session expired. Please log in again.");
+        return res.redirect('/login');
     }
 
     try {
-        const decodedToken = jwt.verify(
-            incomingRefreshToken,
-            process.env.JWT_REFRESH_TOKEN_SECRET
-        );
-
-        console.log("Decoded Token:", decodedToken);  // Debugging
+        const decodedToken = jwt.verify(incomingRefreshToken, process.env.JWT_REFRESH_TOKEN_SECRET);
+        // console.log("✅ Decoded Token:", decodedToken);
 
         if (!decodedToken) {
-            throw new apiError(401, "Invalid token");
+            console.error("❌ Invalid token during verification.");
+            req.flash('error', "Invalid session. Please log in again.");
+            return res.redirect('/login');
         }
 
         const userId = decodedToken._id;
         const user = await User.findById(userId);
 
         if (!user) {
-            throw new apiError(401, "User not found");
+            console.error("❌ User not found for ID:", userId);
+            req.flash('error', "User not found. Please log in again.");
+            return res.redirect('/login');
         }
 
-        console.log("User Found:", user);  // Debugging
+        console.log("✅ User Found:", user);
 
-        // Check if the refresh token matches the one in the user's database
+        // ✅ Ensure refresh token matches the one stored in the database
         if (user.refreshToken !== incomingRefreshToken) {
-            throw new apiError(401, "Refresh token mismatch or expired");
+            console.error("❌ Refresh token mismatch.");
+            req.flash('error', "Session expired. Please log in again.");
+            return res.redirect('/login');
         }
 
-        // Generate new access and refresh tokens
+        // ✅ Generate new access and refresh tokens
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(userId);
 
-        // Set the new tokens in cookies
+        // ✅ Set the new tokens in cookies
         const options = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-            sameSite: "lax", // Recommended setting for cross-site requests
-            maxAge: 24 * 60 * 60 * 1000, // Set expiration for the cookie (24 hours)
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            maxAge: 24 * 60 * 60 * 1000
         };
 
-        // Send response with new tokens in cookies
+        // ✅ Send new tokens in response
+        req.flash('success', "Session refreshed successfully!");
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
-            .json(new apiResponse(200, { accessToken, refreshToken }, "Access token refreshed successfully"));
+            .redirect('/'); // Redirect to home or dashboard
     } catch (err) {
-        console.error("JWT Verification Error:", err.name, err.message);
-        throw new apiError(401, err.message || "Invalid refresh token");
+        console.error("JWT Verification Error:", err.name, err.message);;
+        req.flash('error', "Session expired. Please log in again.");
+        return res.redirect('/login');
     }
 });
 
 
 
-const changeCurrentPassword = asyncHandler(async (req, res) => {
-    const userId = req.user?._id;
-
-    const { oldPassword, newPassword } = req.body;
-    console.log("Received Body:", req.body);
-
-    // validate required fields
-    if (!oldPassword || !newPassword) {
-        throw new apiError(400, "All fields are required");
+const account = asyncHandler(async (req, res) => {
+    if (!req.session.user) {
+        req.flash('error', "No user is logged in.");
+        return res.redirect('/login');
     }
-    // find user
-    let user = await User.findById(userId);
+    try {
+        const user = await User.findById(req.session.user._id).select("-password -refreshToken");
+        if (!user) {
+            req.flash('error', "User not found.");
+            return res.redirect('/login');
+        }
+        // res.status(200).json(new apiResponse(200, user, "User found successfully"));
+        return res.render('users/profile', { user });
+    } catch (err) {
+        console.error("Error fetching user:", err);
+        req.flash('error', "Failed to fetch user.");
+        return res.redirect('/login');
+    }
+});
+
+// 📌 render updateform
+const renderUpdateForm = asyncHandler(async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    const user = await User.findById(req.session.user._id).select('-password');
     if (!user) {
-        throw new apiError(401, "User not found");
+        return res.redirect('/login');
     }
-    // validate old password
-    const isMatch = await user.isPasswordCorrect(oldPassword);
-    if (!isMatch) {
-        throw new apiError(401, "Incorrect old password");
+    res.render('users/updateUser', { user });
+})
+
+const updateProfile = asyncHandler(async (req, res) => {
+    const { name, email, password, address, bio, profilePic } = req.body;
+
+    try {
+        // Find the user by ID
+        const user = await User.findById(req.session.user._id);
+
+        if (!user) {
+            req.flash('error', "User not found.");
+            return res.redirect('/account');
+        }
+
+        // Check if the email or name already exists (other than the current user)
+        const userExists = await User.findOne({
+            $or: [{ email }, { name }],
+            _id: { $ne: req.session.user._id }, // Ensure it's not the same user
+        });
+
+        if (userExists) {
+            req.flash('error', "Email or Name already in use.");
+            return res.redirect('/profile');
+        }
+
+        // Update user fields
+        user.name = name;
+        user.email = email;
+        user.address = address;
+        user.bio = bio || user.bio; // Keep existing bio if not provided
+        user.profilePic = profilePic || user.profilePic; // Keep existing profilePic if not provided
+
+        // Save the updated user
+        await user.save();
+
+        // Update session user data
+        req.session.user.name = user.name;
+        req.session.user.email = user.email;
+
+        req.flash('success', "Profile updated successfully.");
+        return res.redirect('/account'); // Redirect to the profile page
+    } catch (err) {
+        console.error("Error updating user details:", err);
+        req.flash('error', "Something went wrong. Please try again.");
+        return res.redirect('/account'); // Redirect back with error message
     }
-    // update password
-    user.password = newPassword;
-    await user.save({ validateBeforeSave: false });
-    return res
-        .status(200)
-        .json(new apiResponse(200, null, "Password updated successfully"));
 });
 
-const currentUser = asyncHandler(async (req, res) => {
-    return res
-        .status(200)
-        .json(
-            new apiResponse(
-                200,
-                req.user,
-                "User details retrieved successfully"
-            )
-        );
-});
-
-const updateUserDetails = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const { fullname } = req.body;
-    if (!fullname) {
-        throw new apiError(400, "Full name is required");
-    }
-    const user = await User.findByIdAndUpdate(
-        userId,
-        {
-            $set: { fullname },
-        },
-        { new: true }
-    ).select("-password -refreshToken");
-    return res
-        .status(200)
-        .json(new apiResponse(200, user, "User details updated successfully"));
-});
-
-const getUserProfile = asyncHandler(async (req, res) => {
-    const { username } = req.params;
-    if (!username) {
-        throw new apiError(400, "Username is required");
-    }
-    const user = await User.findOne({ username }).select("-password -refreshToken");
-    if (!user) {
-        throw new apiError(404, "User not found");
-    }
-    return res
-        .status(200)
-        .json(new apiResponse(200, user, "User profile retrieved successfully"));
-
+// 📌 Delete User
+const deleteUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndDelete(req.session.user._id);
+    req.flash('success', "Account deleted successfully!");
+    return res.redirect('/login');
 });
 
 
@@ -322,8 +341,8 @@ module.exports = {
     loginUser,
     refreshAccessToken,
     logOutUser,
-    changeCurrentPassword,
-    currentUser,
-    updateUserDetails,
-    getUserProfile,
+    account,
+    renderUpdateForm,
+    updateProfile,
+    deleteUser,
 };

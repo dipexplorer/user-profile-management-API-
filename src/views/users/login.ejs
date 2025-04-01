@@ -18,9 +18,16 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(142, 0, 255, 0.7);
         }
+
+        .frm_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
     </style>
     <div class="frm_container row">
-        <div class="col-md-4 offset-md-4 frm_box">
+        <div class="col-md-4 frm_box">
             <!-- Toggle Buttons -->
             <div class="toggle">
                 <button id="login-toggle" class="active">Login</button>
@@ -32,8 +39,8 @@
                 <div class="row mb-3">
                     <div class="col">
                         <div class="input-group form-group">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="text" id="email" name="email" placeholder="Enter your email"
+                            <label for="name" class="form-label">Username</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your username"
                                 class="form-control" required>
                             <div class="invalid-feedback">Please enter a valid username.</div>
                         </div>

@@ -4,10 +4,8 @@ const {
     loginUser,
     refreshAccessToken,
     logOutUser,
-    changeCurrentPassword,
-    currentUser,
-    updateUserDetails,
-    getUserProfile,
+    updateProfile,
+    deleteUser
 } = require("../controllers/user.controllers.js");
 
 const verifyJWT = require("../middlewares/auth.middleware.js");
@@ -28,18 +26,16 @@ router.route("/login").post(loginUser);
 
 // ✅ Secure  Route
 router.route("/logout").get(logOutUser);
+
+
 // ✅ Refresh Access Token Route
 router.route("/refresh-token").post(refreshAccessToken);
 
-// ✅ User Profile Routes
-router.route("/account").get(verifyJWT, currentUser);
-router.route("/update-profile").put(verifyJWT, updateUserDetails);
 
-// ✅ User password change route or Security Route
-router.route("/change-password").put(verifyJWT, changeCurrentPassword);
+// ✅ Update User Profile Route (with file upload)
+router.route("/update").put(verifyJWT, updateProfile);
 
+router.route("/delete").delete(deleteUser);
 
-// ✅ User Profile Routes
-router.route("/profile/:username").get(verifyJWT, getUserProfile);
 
 module.exports = router;
