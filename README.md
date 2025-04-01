@@ -30,136 +30,145 @@ A RESTful API for user profile management with authentication using **Express.js
 
 ## 📂 Folder Structure
 
-src/ │── controllers/ # Controller functions for handling business logic │── db/ # Database connection and initialization │── middlewares/ # Custom middlewares (e.g., authentication) │── models/ # Mongoose models (User Schema) │── routes/ # API route definitions │── utils/ # Utility functions (e.g., error handling) │── public/ # Public assets (if needed) │── uploads/ # For profile picture uploads (if implemented) │── views/ # Views (if using a templating engine like EJS) │── app.js # Main Express app file │── index.js # Entry point │── constants.js # Store app-wide constants │── .env.sample # Environment variables sample file │── .gitignore # Ignore unnecessary files in Git │── package.json # Project metadata and dependencies │── README.md # Project documentation
-
-yaml
-Copy
-Edit
-
----
+src/
+│── controllers/ # Controller functions for handling business logic
+│── db/ # Database connection and initialization
+│── middlewares/ # Custom middlewares (e.g., authentication)
+│── models/ # Mongoose models (User Schema)
+│── routes/ # API route definitions
+│── utils/ # Utility functions (e.g., error handling)
+│── public/ # Public assets (if needed)
+│── uploads/ # For profile picture uploads (if implemented)
+│── views/ # Views (if using a templating engine like EJS)
+│── app.js # Main Express app file
+│── index.js # Entry point
+│── constants.js # Store app-wide constants
+│── .env.sample # Environment variables sample file
+│── .gitignore # Ignore unnecessary files in Git
+│── package.json # Project metadata and dependencies
+│── README.md # Project documentation
 
 ## 🚀 Getting Started
 
 ### 1️⃣ Clone the Repository
 
-```sh
-git clone https://github.com/your-username/user-profile-api.git
+```bash
+git clone [https://github.com/your-username/user-profile-api.git](https://github.com/your-username/user-profile-api.git)
 cd user-profile-api
+
 2️⃣ Install Dependencies
-sh
-Copy
-Edit
 npm install
-or install required dependencies manually:
 
-sh
-Copy
-Edit
+Alternatively, install the required dependencies manually:
 npm i express mongoose dotenv bcryptjs jsonwebtoken helmet cors morgan express-validator
-3️⃣ Set Up Environment Variables
-Create a .env file in the root directory.
 
-Refer to .env.sample for required variables.
+3️⃣ Set Up Environment Variables
+Create a .env file in the root directory and refer to .env.sample for required variables.
 
 4️⃣ Run the Server
 For development:
-
-sh
-Copy
-Edit
 npm run dev
-The API will be available at: http://localhost:8000
+
+The API will be available at: http://localhost:8000 (or the port specified in your .env file).
 
 📌 API Endpoints
-Method	Endpoint	Description	Authentication
-POST	/api/users/register	Register a new user	❌ No
-POST	/api/users/login	Login and get JWT	❌ No
-GET	/api/users/profile	Get user profile	✅ Yes (JWT)
-PUT	/api/users/profile	Update user profile	✅ Yes (JWT)
+POST	/api/users/register	Register a new user
+POST	/api/users/login	Login and get JWT
+GET	/api/users/profile	Get user profile
+PUT	/api/users/profile	Update user profile
+
 📜 Detailed API Documentation
-🔹 User Registration
-Endpoint: POST /api/users/register
-
+1️⃣ User Registration Endpoint: POST /api/users/register
 Description: Registers a new user.
-
 Request Body:
 
-json
-Copy
-Edit
+JSON
+
 {
   "name": "John Doe",
   "email": "john@example.com",
   "password": "password123",
   "address": "123 Street, City",
   "bio": "Software Developer",
-  "profilePic": "https://example.com/profile.jpg"
+  "profilePic": "[https://example.com/profile.jpg](https://example.com/profile.jpg)"
 }
-Response:
 
-json
-Copy
-Edit
+Response (Success 201 Created):
+
+JSON
+
 {
   "message": "User registered successfully!"
 }
-🔹 User Login
-Endpoint: POST /api/users/login
-
+2️⃣ User Login Endpoint: POST /api/users/login
 Description: Authenticates user and returns a JWT token.
 
 Request Body:
 
-json
-Copy
-Edit
+JSON
+
 {
   "email": "john@example.com",
   "password": "password123"
 }
-🔹 Get User Profile (Protected)
-Endpoint: GET /api/users/profile
+Response (Success 200 OK):
 
+JSON
+
+{
+  "token": "your_jwt_token"
+}
+3️⃣ Get User Profile (Protected) Endpoint: GET /api/users/profile
 Description: Retrieves the authenticated user's profile.
 
 Headers:
 
-json
-Copy
-Edit
+JSON
+
 {
   "Authorization": "Bearer your_jwt_token"
 }
-🔹 Update Profile (Protected)
-Endpoint: PUT /api/users/profile
+Response (Success 200 OK):
 
+JSON
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "address": "123 Street, City",
+  "bio": "Software Developer",
+  "profilePic": "[https://example.com/profile.jpg](https://example.com/profile.jpg)"
+}
+4️⃣ Update Profile (Protected) Endpoint: PUT /api/users/profile
 Description: Updates user profile details.
 
 Headers:
 
-json
-Copy
-Edit
+JSON
+
 {
   "Authorization": "Bearer your_jwt_token"
 }
-Request Body:
+Request Body: (Include only the fields you want to update)
 
-json
-Copy
-Edit
+JSON
+
 {
   "name": "John Updated",
   "address": "456 New Street, City",
   "bio": "Senior Developer",
-  "profilePic": "https://example.com/new-profile.jpg"
+  "profilePic": "[https://example.com/new-profile.jpg]"
+}
+Response (Success 200 OK):
+
+JSON
+
+{
+  "message": "User profile updated successfully!"
 }
 📜 License
 This project is licensed under the MIT License.
 
-vbnet
-Copy
-Edit
 
-This version improves formatting, enhances readability, and ensures consistency. Let me know if you need any mo
+
 ```
